@@ -10,7 +10,10 @@ function areNums() {
 	var result = true;
 	for (var i = 0, l = arguments.length; i < l; ++i) {
 		var a = arguments[i];
-		if (isNaN(a)) result = false;
+		if (isNaN(a)) {
+            result = false;
+            break;
+        }
 	};
 
 	return result;
@@ -28,8 +31,7 @@ function interpolateFrames(f1, f2, time) {
 	if ( areNums(f1.pos.y, f2.pos.y) ) y = f1.pos.y + perc * (f2.pos.y - f1.pos.y);
 	if ( areNums(f1.pos.z, f2.pos.z) ) z = f1.pos.z + perc * (f2.pos.z - f1.pos.z);
 
-	var frame = { z: z };
-	console.log(frame);
+	var frame = { x: x, y: y, z: z };
 	return frame;
 };
 
@@ -198,8 +200,10 @@ function loadAssets(cb) {
 
 function main() {
 
+    var clearColor = 0xFFFFFF;
+
 	Game.renderer = new THREE.WebGLRenderer ( { antialias: true } );
-	Game.renderer.setClearColor(0xFFFFFF, 1);
+	Game.renderer.setClearColor(clearColor, 1);
 	Game.renderer.setSize(Game.viewWidth, Game.viewHeight);
 
 	document.body.appendChild(Game.renderer.domElement);
@@ -210,6 +214,7 @@ function main() {
 	camera.rotation.x = 0;
  
 	Game.scene = new THREE.Scene();
+    Game.scene.fog = new THREE.FogExp2( clearColor, 0.1 );
 
 	var pointLight = new THREE.PointLight(0xFFFFFF);
 	pointLight.position.x = 0;
