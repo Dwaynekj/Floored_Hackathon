@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+<head>
+	<script src="./lib/jquery-1.8.1.min.js"></script>
+	<script src="./lib/node_modules/leapjs/leap.js"></script>
+	<script src="./lib/three.js"></script>
+	<script src="./game.js"></script>
+
+</head>
+
+<style type="text/css" >
+	#temp {
+		height: 100px;
+		border: solid red 2px;
+		overflow: auto;
+
+	}
+
+	#temp ul {
+		height: 1000px;
+	}
+	
+</style>
+
+<body>
+	<script>
+    (function(){
+	    function PollDevice() {
+	      	console.log('Polling Initialized');
+	      	_that = this;
+	      	this.x = 0;
+	      	this.y = 0;
+	      	this.z = 0;
+	      	this.direction;//Vector3 
+
+	      	var SCENE_SIZE = 1000;
+
+	      	Leap.loop({enableGestures: true}, function(frame){
+	           if (frame.hands[0] && frame.hands[0].fingers[0]) {
+	           		console.log("finger detected")
+	           		leapToScene(frame.hands[0].fingers[0].tipPosition)
+	            }else{
+	            	_that.x = SCENE_SIZE *1000
+	            }
+
+	            if (frame.gestures.length !== 0) {
+	               	console.dir(frame.gestures);
+	            	console.log("I just tapped the Screen!!");
+	            }
+	        });
+
+	         function leapToScene(leapPosition){
+	   			_that.x = (leapPosition[0]/300)*SCENE_SIZE
+	   		    _that.y = (((leapPosition[1])-200)/300)*SCENE_SIZE
+	   		    _that.z = (leapPosition[2]/300)*SCENE_SIZE
+	   		    //var toReturn = new THREE.Vector3(x,y,z)
+	   			 return null
+	   	    }
+
+	    }
+
+
+	    window.pollDevice = new PollDevice();
+	})()
+
+
+
+   //    console.log('CHECK');
+   //    var SCENE_SIZE = 1000, camera, scene, renderer, stats, clock, geometry, material, mesh, myFinger;
+
+   //    var init = function () {
+   //      camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, SCENE_SIZE/1000, SCENE_SIZE );
+   //      camera.position.z = SCENE_SIZE/2;
+   //      scene = new THREE.Scene();
+   //      geometry = new THREE.SphereGeometry(SCENE_SIZE/20,4,4);
+   //      material = new THREE.MeshBasicMaterial( { color: 0x000000} );
+   //      myFinger = new THREE.Mesh(geometry, material);
+   //      myFinger.position.x = SCENE_SIZE * 1000
+   //      scene.add(myFinger)
+
+   //      renderer = new THREE.WebGLRenderer();
+   //      renderer.setSize( window.innerWidth, window.innerHeight );
+   //      document.body.appendChild( renderer.domElement );
+   //      Leap.loop({enableGestures: true}, function(frame){
+   //        if (frame.hands[0] && frame.hands[0].fingers[0]) {
+   //        	console.log("finger updated")
+   //        	myFinger.position = leapToScene(frame.hands[0].fingers[0].tipPosition)
+   //         }else{
+   //          myFinger.position.x = SCENE_SIZE *1000
+   //         }
+
+   //         if (frame.gestures.length !== 0) {
+   //            console.dir(frame.gestures);
+   //         	  console.log("I just tapped the Screen!!");
+   //         	}
+
+   //         	var ray = new THREE.Ray( myFinger.position, directionVector.clone().normalize() );
+			// var collisionResults = ray.intersectObjects( collidableMeshList );
+
+			// if ( collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() )  {
+		 //    // a collision occurred... do something...
+   //          }
+
+   //      });
+   //    }
+   //    var animate = function () {
+   //      requestAnimationFrame( animate );
+   //      renderer.render( scene, camera );
+   //    }
+   //    init();
+   //    animate();
+   //    function leapToScene(leapPosition){
+   //      var x = (leapPosition[0]/300)*SCENE_SIZE
+   //      var y = (((leapPosition[1])-200)/300)*SCENE_SIZE
+   //      var z = (leapPosition[2]/300)*SCENE_SIZE
+   //      var toReturn = new THREE.Vector3(x,y,z)
+   //      return toReturn
+   //    }
+
+    </script>
+	<canvas width="2560" height="1404" style="width: 1280px; height: 702px;"></canvas>
+
+</body>
+<html>
