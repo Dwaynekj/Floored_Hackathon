@@ -41,6 +41,7 @@ var Game = {
 	clock: new THREE.Clock(true),
 	frameDelta: 0,
 	scene: null,
+    camera: null,
 	renderer: null,
 	target: undefined,
 	score: 0
@@ -130,9 +131,11 @@ Target.prototype.setAnimation = function (animation) {
 
 Target.prototype.reposition = function () {
 
-	var range = 6;
-	var x = (Math.random() * range)-(range/2);
-	var y = (Math.random() * range)-(range/2);
+	var xRange = 7;
+	var yRange = 4;
+
+	var x = (Math.random() * xRange)-(xRange/2);
+	var y = (Math.random() * yRange)-(yRange/2);
 
 	this.setPosition({x: x, y: y});
 };
@@ -157,9 +160,33 @@ function gameEnd() {
 	Game.score = 0;
 }
 
+function leapConnected() {
+    // Determine if leap is connected.
+    return false;
+}
+
 function onDocumentMouseDown( event ) {
-	event.preventDefault();
-	return Game.target.hit();
+
+    if (!leapConnected()) {
+        event.preventDefault();
+
+        var projector = new THREE.Projector();
+
+        var x = (event.clientX / window.innerWidth) * 2 - 1;
+        var y = -( event.clientY / window.innerHeight) * 2 + 1;
+        var z = 0.5;
+        var vector = new THREE.Vector3( x, y, z );
+
+        var raycaster = projector.pickingRay( vector, Game.camera );
+        var intersects = raycaster.intersectObjects(Game.scene.children, true);
+
+        for (var i = 0, l = intersects.length; i < l; ++i) {
+            Game.target.hit();  
+        }
+    } else {
+        // To be implemented.
+    };
+
 };
 
 function loadAssets(cb) {
@@ -208,10 +235,10 @@ function main() {
 
 	document.body.appendChild(Game.renderer.domElement);
  
-	var camera = new THREE.PerspectiveCamera(45, Game.viewWidth/Game.viewHeight, 1, 1000);
-	camera.position.y = 0;
-	camera.position.z = 5;
-	camera.rotation.x = 0;
+	Game.camera = new THREE.PerspectiveCamera(45, Game.viewWidth/Game.viewHeight, 1, 1000);
+	Game.camera.position.y = 0;
+	Game.camera.position.z = 5;
+	Game.camera.rotation.x = 0;
  
 	Game.scene = new THREE.Scene();
     Game.scene.fog = new THREE.FogExp2( clearColor, 0.1 );
@@ -222,22 +249,17 @@ function main() {
 	pointLight.position.z = 10;
 	Game.scene.add(pointLight);
 
-	//projector = new THREE.Projector();
-
-
-/*
 	var stats = new Stats();
 	stats.domElement.style.position = 'absolute';
 	stats.domElement.style.top = '0px';
-	container.appendChild( stats.domElement );
-*/
+	$("body").append( stats.domElement );
 
 	function renderScene() {
 		requestAnimationFrame(function () {
 			Game.frameDelta = Game.clock.getDelta();
 			Game.target.animate(Game.frameDelta);
-			Game.renderer.render(Game.scene, camera);
-			//stats.update();
+			Game.renderer.render(Game.scene, Game.camera);
+			stats.update();
 			renderScene();
 		});
 	}
